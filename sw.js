@@ -1,6 +1,6 @@
 // Caches the app shell on first visit so the page opens without internet.
 // Bump CACHE when index.html changes, so phones pick up the new version.
-var CACHE = 'dandelion-wine-v4';
+var CACHE = 'dandelion-wine-v5';
 var FILES = [
   './',
   './index.html',
