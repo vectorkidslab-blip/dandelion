@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Вино из одуванчиков</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<meta name="theme-color" content="#2D5A3D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Одуванчики">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+/* One narrow reading column. Progress band, a short prep block, then 15 days in three summer phases, each with its own notes field. */
+:root {
+  --bg: #F4F6E6;
+  --surface: #FBFCF3;
+  --fg: #1F2D22;
+  --muted: #5B6B5C;
+  --line: #D9DEC3;
+  --accent: #E3AE00;
+  --accent-ink: #2A2200;
+  --green: #2D5A3D;
+  --done-bg: #E9F0CF;
+  --field: #FFFFFF;
+  --font-display: Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141C16;
+    --surface: #1C261E;
+    --fg: #ECEFDD;
+    --muted: #A3B09F;
+    --line: #2F3C31;
+    --accent: #F0C21E;
+    --accent-ink: #2A2200;
+    --green: #8FC08F;
+    --done-bg: #25341E;
+    --field: #141C16;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-top: max(24px, env(safe-area-inset-top, 0px));
+  padding-bottom: max(48px, env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+
+header { display: flex; gap: 16px; align-items: center; }
+header svg { flex: none; width: 64px; height: 64px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 7vw, 42px); line-height: 1.1; margin: 0; }
+.byline { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: 21px; margin: 0 0 4px; }
+.phase-note { margin: 0 0 12px; color: var(--muted); font-size: 15px; }
+
+.summary { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+.summary-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px 16px; flex-wrap: wrap; }
+.count { font-family: var(--font-display); font-weight: 700; font-size: 24px; font-variant-numeric: lining-nums; }
+.count small { font-family: var(--font-body); font-weight: 400; font-size: 15px; color: var(--muted); }
+.bar { height: 10px; border-radius: 6px; background: var(--line); overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 6px; transition: width .3s ease; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; font-size: 15px; color: var(--muted); }
+.controls label { display: flex; align-items: center; gap: 8px; }
+input[type="date"] { font: inherit; color: var(--fg); background: var(--field); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
+button { font: inherit; font-size: 14px; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 7px 12px; cursor: pointer; }
+button:hover { color: var(--fg); border-color: var(--muted); }
+button.armed { color: var(--fg); border-color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.prep { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+ul { list-style: none; margin: 0; padding: 0; }
+.prep ul { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+
+.days { display: flex; flex-direction: column; gap: 10px; }
+.day { display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px 14px 14px; transition: background .2s ease; }
+.day.done { background: var(--done-bg); }
+.num { text-align: center; line-height: 1; padding-top: 2px; }
+.num b { display: block; font-family: var(--font-display); font-size: 34px; font-variant-numeric: lining-nums; }
+.num span { display: block; margin-top: 6px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.day-body { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.day-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+.chapters { font-weight: 600; font-size: 17px; }
+.date { color: var(--muted); font-size: 14px; }
+.stamp { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--green); }
+.tasks { display: flex; flex-direction: column; gap: 8px; }
+
+.item { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
+.item span { min-width: 0; }
+.item input { -webkit-appearance: none; appearance: none; flex: none; width: 24px; height: 24px; margin: 0; border: 2px solid var(--muted); border-radius: 6px; background: var(--field); position: relative; cursor: pointer; }
+.item input:checked { background: var(--accent); border-color: var(--accent); }
+.item input:checked::after { content: ""; position: absolute; left: 7px; top: 2px; width: 6px; height: 12px; border: solid var(--accent-ink); border-width: 0 3px 3px 0; transform: rotate(45deg); }
+.item input:checked + span { color: var(--muted); }
+
+.note-label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+textarea {
+  width: 100%; min-height: 84px; resize: vertical;
+  font: inherit; font-size: 16px; line-height: 1.45; color: var(--fg);
+  background: var(--field); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+}
+textarea::placeholder { color: var(--muted); opacity: .8; }
+
+.notebook { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.notebook textarea { min-height: 140px; margin-top: 8px; }
+.tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.tools p { margin: 0; flex-basis: 100%; color: var(--muted); font-size: 14px; }
+#exportBox { display: none; margin-top: 4px; }
+#exportBox.show { display: block; }
+.toast { color: var(--green); font-size: 14px; }
+
+.hint { color: var(--muted); font-size: 14px; line-height: 1.55; border-top: 1px solid var(--line); padding-top: 16px; margin: 0; }
+
+@media (max-width: 480px) {
+  .day { grid-template-columns: 1fr; gap: 8px; }
+  .num { display: flex; align-items: baseline; gap: 8px; text-align: left; }
+  .num b { font-size: 28px; }
+  .num span { margin: 0; }
+  header svg { width: 52px; height: 52px; }
+}
+@media (prefers-reduced-motion: reduce) { .bar > i, .day { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <svg id="seed" viewBox="0 0 72 72" aria-hidden="true"></svg>
+    <div>
+      <h1>Вино из одуванчиков</h1>
+      <p class="byline">Рэй Брэдбери. Чек-лист чтения на 15 дней, по 29 главам</p>
+    </div>
+  </header>
+
+  <section class="summary" aria-label="Прогресс">
+    <div class="summary-top">
+      <div class="count"><span id="doneDays">0</span> <small>из 15 дней прочитано</small></div>
+      <div class="count"><small>отмечено пунктов</small> <span id="doneItems">0</span><small> из 45</small></div>
+    </div>
+    <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bar"><i id="barFill"></i></div>
+    <div class="controls">
+      <label for="start">Старт чтения <input type="date" id="start"></label>
+      <button type="button" id="reset">Сбросить всё</button>
+    </div>
+  </section>
+
+  <section class="prep" aria-labelledby="prepTitle">
+    <h2 id="prepTitle">Перед началом</h2>
+    <p class="phase-note">Пять минут, и дальше только чтение.</p>
+    <ul id="prepList"></ul>
+  </section>
+
+  <div id="phases" style="display:flex;flex-direction:column;gap:28px"></div>
+
+  <section class="notebook" aria-labelledby="nbTitle">
+    <h2 id="nbTitle">Общие заметки о книге</h2>
+    <p class="phase-note">Любимые места, вопросы, мысли после прочтения.</p>
+    <textarea id="general" placeholder="Пишите сюда что угодно"></textarea>
+  </section>
+
+  <section class="tools" aria-label="Сохранение записей">
+    <button type="button" id="copyAll">Скопировать все записи</button>
+    <span class="toast" id="toast" role="status"></span>
+    <p>Всё хранится на этом телефоне. Чтобы не потерять записи, иногда копируйте их и сохраняйте в «Заметки».</p>
+    <textarea id="exportBox" readonly aria-label="Все записи для копирования"></textarea>
+  </section>
+
+  <p class="hint">В день выходит примерно по две главы, то есть около сорока минут неспешного чтения. Если в вашем издании главы разделены иначе, делите книгу на пятнадцать равных частей и читайте по одной в день.</p>
+</div>
+
+<script>
+(function () {
+  var KEY = 'dandelion-wine-app-v1';
+
+  var prepItems = [
+    'Выбрать издание: бумажное, электронное или аудио',
+    'Выбрать постоянное время и место для чтения',
+    'Подготовить закладку и блокнот для заметок',
+    'Поставить ежедневное напоминание на телефоне'
+  ];
+  var phases = [
+    { title: 'Дни 1 по 5, лето начинается', note: 'Гринтаун, Иллинойс, 1928 год. Знакомство с героями и городом.', from: 1, to: 5 },
+    { title: 'Дни 6 по 10, лето в разгаре', note: 'Жара, приключения и первые серьёзные мысли.', from: 6, to: 10 },
+    { title: 'Дни 11 по 15, лето уходит', note: 'Настроение меняется. Финал и итоги.', from: 11, to: 15 }
+  ];
+  var days = [
+    { c: 'Главы 1 и 2', p: 'Записать, где и когда происходит действие и сколько лет Дугласу.' },
+    { c: 'Главы 3 и 4', p: 'Найти образ, связанный с вином из одуванчиков, и описать, что оно значит для семьи.' },
+    { c: 'Главы 5 и 6', p: 'Выписать запах или звук лета, который удалось почувствовать вместе с автором.' },
+    { c: 'Главы 7 и 8', p: 'Заметить, чем взгляд детей на мир отличается от взгляда взрослых.' },
+    { c: 'Главы 9 и 10', p: 'Выбрать героя дня и описать его одним словом.' },
+    { c: 'Главы 11 и 12', p: 'Найти эпизод о времени, памяти или старости. Что в нём важно для героя?' },
+    { c: 'Главы 13 и 14', p: 'Выбрать самую яркую метафору и пересказать её своими словами.' },
+    { c: 'Главы 15 и 16', p: 'Вспомнить эпизод, который вызвал сильное чувство, радость или тревогу.' },
+    { c: 'Главы 17 и 18', p: 'Подумать, что эти главы говорят о жизни и о том, что она конечна.' },
+    { c: 'Главы 19 и 20', p: 'Сравнить себя в двенадцать лет с Дугласом. Что у вас общего?' },
+    { c: 'Главы 21 и 22', p: 'Заметить, как изменилось настроение книги, и найти самый тревожный момент.' },
+    { c: 'Главы 23 и 24', p: 'Выписать короткую фразу, которую хочется запомнить, не длиннее десяти слов.' },
+    { c: 'Главы 25 и 26', p: 'Записать, что герои понимают про счастье.' },
+    { c: 'Главы 27 и 28', p: 'Отметить детали лета, которые повторяются и теперь звучат иначе.' },
+    { c: 'Глава 29', p: 'Сформулировать главную мысль книги одним предложением.' }
+  ];
+
+  function tasksFor(i) {
+    var last = (i === 14);
+    return [
+      last ? 'Прочитать главу 29' : 'Прочитать ' + days[i].c.toLowerCase(),
+      days[i].p,
+      last ? 'Записать итог и поставить оценку от 1 до 10' : 'Записать впечатление дня'
+    ];
+  }
+
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+  }
+  function fresh() {
+    var o = { start: todayStr(), prep: [false, false, false, false], days: [], general: '' };
+    for (var i = 0; i < 15; i++) o.days.push({ t: [false, false, false], note: '' });
+    return o;
+  }
+  function valid(s) {
+    return s && s.days && s.days.length === 15 && s.prep && s.prep.length === 4 &&
+      s.days.every(function (d) { return d && d.t && d.t.length === 3; });
+  }
+  function load() {
+    try { var raw = localStorage.getItem(KEY); if (raw) { var s = JSON.parse(raw); if (valid(s)) return s; } } catch (e) {}
+    return null;
+  }
+  var state = load() || fresh();
+  if (!state.start) state.start = todayStr();
+  if (typeof state.general !== 'string') state.general = '';
+
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  var MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+  var WD = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+  function dateOf(i) {
+    var p = state.start.split('-');
+    return new Date(+p[0], +p[1] - 1, +p[2] + i);
+  }
+  function fmtDate(i) {
+    var d = dateOf(i);
+    return WD[d.getDay()] + ', ' + d.getDate() + ' ' + MONTHS[d.getMonth()];
+  }
+
+  function makeItem(text, checked, onChange, id) {
+    var label = document.createElement('label');
+    label.className = 'item';
+    label.setAttribute('for', id);
+    var cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.id = id; cb.checked = !!checked;
+    cb.addEventListener('change', function () { onChange(cb.checked); });
+    var sp = document.createElement('span');
+    sp.textContent = text;
+    label.appendChild(cb); label.appendChild(sp);
+    return { label: label, input: cb };
+  }
+
+  var dayEls = [], dateEls = [], stampEls = [], thirdBoxes = [], noteEls = [];
+
+  function buildPrep() {
+    var ul = document.getElementById('prepList');
+    prepItems.forEach(function (t, i) {
+      var li = document.createElement('li');
+      li.appendChild(makeItem(t, state.prep[i], function (v) { state.prep[i] = v; save(); }, 'prep-' + i).label);
+      ul.appendChild(li);
+    });
+  }
+
+  function buildDays() {
+    var host = document.getElementById('phases');
+    phases.forEach(function (ph) {
+      var sec = document.createElement('section');
+      var h = document.createElement('h2'); h.textContent = ph.title;
+      var n = document.createElement('p'); n.className = 'phase-note'; n.textContent = ph.note;
+      var list = document.createElement('div'); list.className = 'days';
+      sec.appendChild(h); sec.appendChild(n); sec.appendChild(list);
+      host.appendChild(sec);
+
+      for (var k = ph.from; k <= ph.to; k++) {
+        (function (i) {
+          var card = document.createElement('article');
+          card.className = 'day';
+
+          var num = document.createElement('div');
+          num.className = 'num';
+          num.innerHTML = '<b>' + (i + 1) + '</b><span>день</span>';
+
+          var body = document.createElement('div');
+          body.className = 'day-body';
+
+          var head = document.createElement('div');
+          head.className = 'day-head';
+          var ch = document.createElement('span'); ch.className = 'chapters'; ch.textContent = days[i].c;
+          var dt = document.createElement('span'); dt.className = 'date';
+          var st = document.createElement('span'); st.className = 'stamp'; st.textContent = 'День прочитан'; st.hidden = true;
+          head.appendChild(ch); head.appendChild(dt); head.appendChild(st);
+
+          var ul = document.createElement('ul');
+          ul.className = 'tasks';
+          tasksFor(i).forEach(function (t, j) {
+            var li = document.createElement('li');
+            var it = makeItem(t, state.days[i].t[j], function (v) {
+              state.days[i].t[j] = v; save(); refresh();
+            }, 'd' + i + '-' + j);
+            if (j === 2) thirdBoxes[i] = it.input;
+            li.appendChild(it.label);
+            ul.appendChild(li);
+          });
+
+          var wrapNote = document.createElement('div');
+          var nl = document.createElement('label');
+          nl.className = 'note-label';
+          nl.setAttribute('for', 'note-' + i);
+          nl.textContent = (i === 14) ? 'Итог и впечатления от книги' : 'Впечатления дня';
+          var ta = document.createElement('textarea');
+          ta.id = 'note-' + i;
+          ta.rows = 3;
+          ta.placeholder = 'Что запомнилось, что почувствовали, какая сцена зацепила';
+          ta.value = state.days[i].note || '';
+          ta.addEventListener('input', function () {
+            var had = state.days[i].note.trim().length > 0;
+            state.days[i].note = ta.value;
+            var has = ta.value.trim().length > 0;
+            if (!had && has && !state.days[i].t[2]) {
+              state.days[i].t[2] = true;
+              thirdBoxes[i].checked = true;
+              refresh();
+            }
+            save();
+          });
+          wrapNote.appendChild(nl); wrapNote.appendChild(ta);
+          noteEls[i] = ta;
+
+          body.appendChild(head); body.appendChild(ul); body.appendChild(wrapNote);
+          card.appendChild(num); card.appendChild(body);
+          list.appendChild(card);
+          dayEls[i] = card; dateEls[i] = dt; stampEls[i] = st;
+        })(k - 1);
+      }
+    });
+  }
+
+  function refresh() {
+    var doneDays = 0, doneItems = 0;
+    for (var i = 0; i < 15; i++) {
+      var c = state.days[i].t.filter(Boolean).length;
+      doneItems += c;
+      var full = (c === 3);
+      if (full) doneDays++;
+      dayEls[i].classList.toggle('done', full);
+      stampEls[i].hidden = !full;
+      dateEls[i].textContent = fmtDate(i);
+    }
+    document.getElementById('doneDays').textContent = doneDays;
+    document.getElementById('doneItems').textContent = doneItems;
+    var pct = Math.round(doneItems / 45 * 100);
+    document.getElementById('barFill').style.width = pct + '%';
+    document.getElementById('bar').setAttribute('aria-valuenow', pct);
+  }
+
+  function drawSeed() {
+    var cx = 36, cy = 30, n = 22, out = '';
+    for (var i = 0; i < n; i++) {
+      var a = (i / n) * Math.PI * 2;
+      var x2 = (cx + Math.cos(a) * 24).toFixed(1), y2 = (cy + Math.sin(a) * 24).toFixed(1);
+      out += '<line x1="' + cx + '" y1="' + cy + '" x2="' + x2 + '" y2="' + y2 + '" stroke="var(--muted)" stroke-width="1.2" stroke-linecap="round"/>';
+      out += '<circle cx="' + x2 + '" cy="' + y2 + '" r="2.6" fill="var(--accent)"/>';
+    }
+    out += '<circle cx="' + cx + '" cy="' + cy + '" r="4" fill="var(--accent)"/>';
+    out += '<path d="M36 36 C 34 48, 38 58, 36 70" fill="none" stroke="var(--green)" stroke-width="2.4" stroke-linecap="round"/>';
+    document.getElementById('seed').innerHTML = out;
+  }
+
+  function exportText() {
+    var lines = ['Вино из одуванчиков. Мои записи', ''];
+    for (var i = 0; i < 15; i++) {
+      var note = (state.days[i].note || '').trim();
+      if (note) {
+        lines.push('День ' + (i + 1) + ', ' + days[i].c.toLowerCase() + ', ' + fmtDate(i));
+        lines.push(note);
+        lines.push('');
+      }
+    }
+    var g = (state.general || '').trim();
+    if (g) { lines.push('Общие заметки'); lines.push(g); }
+    if (lines.length <= 2) lines.push('Записей пока нет.');
+    return lines.join('\n');
+  }
+
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.textContent = ''; }, 3500);
+  }
+
+  buildPrep();
+  buildDays();
+  drawSeed();
+
+  var general = document.getElementById('general');
+  general.value = state.general;
+  general.addEventListener('input', function () { state.general = general.value; save(); });
+
+  var startEl = document.getElementById('start');
+  startEl.value = state.start;
+  startEl.addEventListener('change', function () {
+    if (startEl.value) { state.start = startEl.value; save(); refresh(); }
+  });
+
+  var copyBtn = document.getElementById('copyAll');
+  var box = document.getElementById('exportBox');
+  copyBtn.addEventListener('click', function () {
+    var text = exportText();
+    function fallback() {
+      box.value = text;
+      box.classList.add('show');
+      box.focus();
+      box.select();
+      toast('Выделите текст и скопируйте его вручную');
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        box.classList.remove('show');
+        toast('Записи скопированы');
+      }, fallback);
+    } else { fallback(); }
+  });
+
+  var resetBtn = document.getElementById('reset');
+  var armed = false, timer = null;
+  function disarm() { armed = false; resetBtn.textContent = 'Сбросить всё'; resetBtn.classList.remove('armed'); }
+  resetBtn.addEventListener('click', function () {
+    if (!armed) {
+      armed = true;
+      resetBtn.textContent = 'Нажмите ещё раз, записи тоже сотрутся';
+      resetBtn.classList.add('armed');
+      timer = setTimeout(disarm, 4000);
+      return;
+    }
+    clearTimeout(timer);
+    var keep = state.start;
+    state = fresh();
+    state.start = keep;
+    save();
+    document.querySelectorAll('.item input').forEach(function (el) { el.checked = false; });
+    noteEls.forEach(function (t) { t.value = ''; });
+    general.value = '';
+    disarm();
+    refresh();
+  });
+
+  refresh();
+
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+})();
+</script>
+</body>
+</html>
