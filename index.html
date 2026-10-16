@@ -3,46 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Вино из одуванчиков</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<meta name="theme-color" content="#2D5A3D">
+<meta name="theme-color" content="#120C1C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Одуванчики">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Вино из одуванчиков</title>
 <style>
-/* One narrow reading column. Progress band, a short prep block, then 15 days in three summer phases, each with its own notes field. */
+/* Fixed sunset picture behind everything. Title on the picture, then glass panels with the 15 suns, notes and the day list. */
 :root {
-  --bg: #F4F6E6;
-  --surface: #FBFCF3;
-  --fg: #1F2D22;
-  --muted: #5B6B5C;
-  --line: #D9DEC3;
-  --accent: #E3AE00;
-  --accent-ink: #2A2200;
-  --green: #2D5A3D;
-  --done-bg: #E9F0CF;
-  --field: #FFFFFF;
+  --bg: #120C1C;
+  --fg: #FFF4DE;
+  --muted: #D8C9BA;
+  --line: rgba(255, 244, 222, .22);
+  --accent: #FFC648;
+  --accent-ink: #2A1A00;
+  --glass: rgba(16, 10, 28, .68);
+  --done-bg: rgba(255, 198, 72, .17);
+  --field: rgba(8, 5, 16, .62);
+  --stamp: #FFD98A;
   --font-display: Georgia, "Times New Roman", serif;
   --font-body: -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #141C16;
-    --surface: #1C261E;
-    --fg: #ECEFDD;
-    --muted: #A3B09F;
-    --line: #2F3C31;
-    --accent: #F0C21E;
-    --accent-ink: #2A2200;
-    --green: #8FC08F;
-    --done-bg: #25341E;
-    --field: #141C16;
-    color-scheme: dark;
-  }
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html { background: var(--bg); -webkit-text-size-adjust: 100%; }
@@ -53,124 +38,174 @@ body {
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.5;
-  padding-top: max(24px, env(safe-area-inset-top, 0px));
+  padding-top: max(22px, env(safe-area-inset-top, 0px));
   padding-bottom: max(48px, env(safe-area-inset-bottom, 0px));
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-.wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+.bg {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(10, 6, 20, .38) 0%, rgba(10, 6, 20, .08) 30%, rgba(10, 6, 20, .5) 62%, rgba(10, 6, 20, .86) 100%),
+    url("bg.jpg") center top / cover no-repeat;
+  background-color: var(--bg);
+}
+.wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
 
-header { display: flex; gap: 16px; align-items: center; }
-header svg { flex: none; width: 64px; height: 64px; }
-h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 7vw, 42px); line-height: 1.1; margin: 0; }
-.byline { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
-h2 { font-family: var(--font-display); font-weight: 700; font-size: 21px; margin: 0 0 4px; }
-.phase-note { margin: 0 0 12px; color: var(--muted); font-size: 15px; }
+.hero { min-height: clamp(300px, 54vh, 540px); padding-top: 4px; }
+h1 {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(32px, 8.4vw, 50px); line-height: 1.05; margin: 0;
+  text-shadow: 0 2px 18px rgba(10, 6, 20, .85), 0 0 2px rgba(10, 6, 20, .6);
+  text-wrap: balance;
+}
+.byline { margin: 8px 0 0; font-size: 15px; color: #FFE6C2; text-shadow: 0 1px 10px rgba(10, 6, 20, .9); }
 
-.summary { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
-.summary-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px 16px; flex-wrap: wrap; }
+.panel {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px 18px;
+}
+h2 { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin: 0 0 2px; text-wrap: balance; }
+.note { margin: 0 0 12px; color: var(--muted); font-size: 15px; }
+ul { list-style: none; margin: 0; padding: 0; }
+
+.suns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px 10px; padding: 8px 4px 2px; }
+.sun {
+  position: relative; display: block; width: 100%; aspect-ratio: 1; padding: 0; margin: 0;
+  background: none; border: 0; border-radius: 50%; color: var(--fg); cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.sun svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; transition: filter .25s ease; }
+.sun .rays line { stroke: var(--accent); stroke-width: 2.6; stroke-linecap: round; opacity: .72; }
+.sun .disc { fill: rgba(255, 230, 180, .1); stroke: var(--accent); stroke-width: 3; transition: fill .2s ease; }
+.sun b { position: relative; display: grid; place-items: center; height: 100%; font-weight: 800; font-size: clamp(16px, 4.6vw, 24px); font-variant-numeric: lining-nums; }
+.sun.on .disc { fill: var(--accent); }
+.sun.on .rays line { opacity: 1; }
+.sun.on svg { filter: drop-shadow(0 0 7px rgba(255, 198, 72, .75)); }
+.sun.on b { color: var(--accent-ink); }
+.sun:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+
+.stats { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; margin: 16px 0 10px; }
 .count { font-family: var(--font-display); font-weight: 700; font-size: 24px; font-variant-numeric: lining-nums; }
 .count small { font-family: var(--font-body); font-weight: 400; font-size: 15px; color: var(--muted); }
-.bar { height: 10px; border-radius: 6px; background: var(--line); overflow: hidden; }
+.bar { height: 10px; border-radius: 6px; background: rgba(255, 244, 222, .16); overflow: hidden; }
 .bar > i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 6px; transition: width .3s ease; }
-.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; font-size: 15px; color: var(--muted); }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin-top: 14px; font-size: 15px; color: var(--muted); }
 .controls label { display: flex; align-items: center; gap: 8px; }
-input[type="date"] { font: inherit; color: var(--fg); background: var(--field); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
-button { font: inherit; font-size: 14px; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 7px 12px; cursor: pointer; }
-button:hover { color: var(--fg); border-color: var(--muted); }
-button.armed { color: var(--fg); border-color: var(--accent); }
+
+input[type="date"], input[type="number"] {
+  font: inherit; font-size: 16px; color: var(--fg); background: var(--field);
+  border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; color-scheme: dark;
+}
+input[type="number"] { width: 110px; }
+button.small {
+  font: inherit; font-size: 14px; color: var(--muted); background: transparent;
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; cursor: pointer;
+}
+button.small:hover { color: var(--fg); border-color: var(--muted); }
+button.small.armed { color: var(--fg); border-color: var(--accent); }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
-.prep { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
-ul { list-style: none; margin: 0; padding: 0; }
 .prep ul { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
 
 .days { display: flex; flex-direction: column; gap: 10px; }
-.day { display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px 14px 14px; transition: background .2s ease; }
-.day.done { background: var(--done-bg); }
+.phase { display: flex; flex-direction: column; gap: 6px; }
+.day {
+  display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 14px;
+  background: var(--glass); -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
+  border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px 14px 14px;
+  transition: background .2s ease;
+}
+.day.done { background: linear-gradient(0deg, var(--done-bg), var(--done-bg)), var(--glass); border-color: rgba(255, 198, 72, .45); }
 .num { text-align: center; line-height: 1; padding-top: 2px; }
-.num b { display: block; font-family: var(--font-display); font-size: 34px; font-variant-numeric: lining-nums; }
+.num b { display: block; font-family: var(--font-display); font-size: 34px; font-variant-numeric: lining-nums; color: var(--accent); }
 .num span { display: block; margin-top: 6px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .day-body { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 .day-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
 .chapters { font-weight: 600; font-size: 17px; }
 .date { color: var(--muted); font-size: 14px; }
-.stamp { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--green); }
+.stamp { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--stamp); }
 .tasks { display: flex; flex-direction: column; gap: 8px; }
 
 .item { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
 .item span { min-width: 0; }
-.item input { -webkit-appearance: none; appearance: none; flex: none; width: 24px; height: 24px; margin: 0; border: 2px solid var(--muted); border-radius: 6px; background: var(--field); position: relative; cursor: pointer; }
+.item input {
+  -webkit-appearance: none; appearance: none; flex: none; width: 24px; height: 24px; margin: 0;
+  border: 2px solid var(--muted); border-radius: 7px; background: var(--field); position: relative; cursor: pointer;
+}
 .item input:checked { background: var(--accent); border-color: var(--accent); }
-.item input:checked::after { content: ""; position: absolute; left: 7px; top: 2px; width: 6px; height: 12px; border: solid var(--accent-ink); border-width: 0 3px 3px 0; transform: rotate(45deg); }
+.item input:checked::after {
+  content: ""; position: absolute; left: 7px; top: 2px; width: 6px; height: 12px;
+  border: solid var(--accent-ink); border-width: 0 3px 3px 0; transform: rotate(45deg);
+}
 .item input:checked + span { color: var(--muted); }
 
 .note-label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
 textarea {
-  width: 100%; min-height: 84px; resize: vertical;
-  font: inherit; font-size: 16px; line-height: 1.45; color: var(--fg);
-  background: var(--field); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+  width: 100%; min-height: 84px; resize: vertical; font: inherit; font-size: 16px; line-height: 1.45; color: var(--fg);
+  background: var(--field); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; color-scheme: dark;
 }
-textarea::placeholder { color: var(--muted); opacity: .8; }
-
-.notebook { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
-.notebook textarea { min-height: 140px; margin-top: 8px; }
+textarea::placeholder { color: var(--muted); opacity: .75; }
+.notebook textarea { min-height: 140px; margin-top: 4px; }
 .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .tools p { margin: 0; flex-basis: 100%; color: var(--muted); font-size: 14px; }
 #exportBox { display: none; margin-top: 4px; }
 #exportBox.show { display: block; }
-.toast { color: var(--green); font-size: 14px; }
-
-.hint { color: var(--muted); font-size: 14px; line-height: 1.55; border-top: 1px solid var(--line); padding-top: 16px; margin: 0; }
+.toast { color: var(--stamp); font-size: 14px; }
+.hint { color: var(--muted); font-size: 14px; line-height: 1.55; margin: 0; padding: 0 4px; text-shadow: 0 1px 8px rgba(10, 6, 20, .8); }
 
 @media (max-width: 480px) {
   .day { grid-template-columns: 1fr; gap: 8px; }
   .num { display: flex; align-items: baseline; gap: 8px; text-align: left; }
   .num b { font-size: 28px; }
   .num span { margin: 0; }
-  header svg { width: 52px; height: 52px; }
 }
-@media (prefers-reduced-motion: reduce) { .bar > i, .day { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .bar > i, .day, .sun svg, .sun .disc { transition: none; } }
 </style>
 </head>
 <body>
+<div class="bg" aria-hidden="true"></div>
 <div class="wrap">
-  <header>
-    <svg id="seed" viewBox="0 0 72 72" aria-hidden="true"></svg>
-    <div>
-      <h1>Вино из одуванчиков</h1>
-      <p class="byline">Рэй Брэдбери. Чек-лист чтения на 15 дней, по 29 главам</p>
-    </div>
+  <header class="hero">
+    <h1>Вино из одуванчиков</h1>
+    <p class="byline">Рэй Брэдбери. Чек-лист чтения на 15 дней, по 29 главам</p>
   </header>
 
-  <section class="summary" aria-label="Прогресс">
-    <div class="summary-top">
+  <section class="panel" aria-labelledby="trTitle">
+    <h2 id="trTitle">Трекер чтения</h2>
+    <p class="note">Нажмите на солнце, когда день прочитан.</p>
+    <div class="suns" id="suns"></div>
+    <div class="stats">
       <div class="count"><span id="doneDays">0</span> <small>из 15 дней прочитано</small></div>
-      <div class="count"><small>отмечено пунктов</small> <span id="doneItems">0</span><small> из 45</small></div>
+      <div class="count"><small>пунктов</small> <span id="doneItems">0</span><small> из 45</small></div>
     </div>
     <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bar"><i id="barFill"></i></div>
     <div class="controls">
       <label for="start">Старт чтения <input type="date" id="start"></label>
-      <button type="button" id="reset">Сбросить всё</button>
+      <label for="pages">Всего страниц <input type="number" id="pages" inputmode="numeric" min="0" placeholder="0"></label>
+      <button type="button" class="small" id="reset">Сбросить всё</button>
     </div>
   </section>
 
-  <section class="prep" aria-labelledby="prepTitle">
+  <section class="panel prep" aria-labelledby="prepTitle">
     <h2 id="prepTitle">Перед началом</h2>
-    <p class="phase-note">Пять минут, и дальше только чтение.</p>
+    <p class="note">Пять минут, и дальше только чтение.</p>
     <ul id="prepList"></ul>
   </section>
 
-  <div id="phases" style="display:flex;flex-direction:column;gap:28px"></div>
+  <div id="phases" class="wrap" style="gap:22px;max-width:none"></div>
 
-  <section class="notebook" aria-labelledby="nbTitle">
+  <section class="panel notebook" aria-labelledby="nbTitle">
     <h2 id="nbTitle">Общие заметки о книге</h2>
-    <p class="phase-note">Любимые места, вопросы, мысли после прочтения.</p>
+    <p class="note">Любимые места, вопросы, мысли после прочтения.</p>
     <textarea id="general" placeholder="Пишите сюда что угодно"></textarea>
   </section>
 
-  <section class="tools" aria-label="Сохранение записей">
-    <button type="button" id="copyAll">Скопировать все записи</button>
+  <section class="panel tools" aria-label="Сохранение записей">
+    <button type="button" class="small" id="copyAll">Скопировать все записи</button>
     <span class="toast" id="toast" role="status"></span>
     <p>Всё хранится на этом телефоне. Чтобы не потерять записи, иногда копируйте их и сохраняйте в «Заметки».</p>
     <textarea id="exportBox" readonly aria-label="Все записи для копирования"></textarea>
@@ -226,7 +261,7 @@ textarea::placeholder { color: var(--muted); opacity: .8; }
     return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
   }
   function fresh() {
-    var o = { start: todayStr(), prep: [false, false, false, false], days: [], general: '' };
+    var o = { start: todayStr(), prep: [false, false, false, false], days: [], general: '', pages: '' };
     for (var i = 0; i < 15; i++) o.days.push({ t: [false, false, false], note: '' });
     return o;
   }
@@ -241,17 +276,15 @@ textarea::placeholder { color: var(--muted); opacity: .8; }
   var state = load() || fresh();
   if (!state.start) state.start = todayStr();
   if (typeof state.general !== 'string') state.general = '';
+  if (typeof state.pages !== 'string') state.pages = '';
 
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 
   var MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
   var WD = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
-  function dateOf(i) {
-    var p = state.start.split('-');
-    return new Date(+p[0], +p[1] - 1, +p[2] + i);
-  }
   function fmtDate(i) {
-    var d = dateOf(i);
+    var p = state.start.split('-');
+    var d = new Date(+p[0], +p[1] - 1, +p[2] + i);
     return WD[d.getDay()] + ', ' + d.getDate() + ' ' + MONTHS[d.getMonth()];
   }
 
@@ -268,7 +301,47 @@ textarea::placeholder { color: var(--muted); opacity: .8; }
     return { label: label, input: cb };
   }
 
-  var dayEls = [], dateEls = [], stampEls = [], thirdBoxes = [], noteEls = [];
+  var dayEls = [], dateEls = [], stampEls = [], dayBoxes = [], noteEls = [], sunEls = [];
+
+  function sunSvg() {
+    var s = '<svg viewBox="0 0 100 100" aria-hidden="true"><g class="rays">';
+    for (var k = 0; k < 16; k++) {
+      var a = k / 16 * Math.PI * 2 + 0.1;
+      var r2 = (k % 2 === 0) ? 49 : 45.5;
+      s += '<line x1="' + (50 + Math.cos(a) * 41).toFixed(1) + '" y1="' + (50 + Math.sin(a) * 41).toFixed(1) +
+           '" x2="' + (50 + Math.cos(a) * r2).toFixed(1) + '" y2="' + (50 + Math.sin(a) * r2).toFixed(1) + '"/>';
+    }
+    return s + '</g><circle class="disc" cx="50" cy="50" r="35"/></svg>';
+  }
+
+  function setDay(i, v) {
+    for (var j = 0; j < 3; j++) {
+      state.days[i].t[j] = v;
+      if (dayBoxes[i] && dayBoxes[i][j]) dayBoxes[i][j].checked = v;
+    }
+    save();
+    refresh();
+  }
+
+  function buildSuns() {
+    var host = document.getElementById('suns');
+    for (var i = 0; i < 15; i++) {
+      (function (i) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'sun';
+        b.setAttribute('aria-label', 'День ' + (i + 1));
+        b.setAttribute('aria-pressed', 'false');
+        b.innerHTML = sunSvg() + '<b>' + (i + 1) + '</b>';
+        b.addEventListener('click', function () {
+          var full = state.days[i].t.every(Boolean);
+          setDay(i, !full);
+        });
+        host.appendChild(b);
+        sunEls[i] = b;
+      })(i);
+    }
+  }
 
   function buildPrep() {
     var ul = document.getElementById('prepList');
@@ -283,8 +356,9 @@ textarea::placeholder { color: var(--muted); opacity: .8; }
     var host = document.getElementById('phases');
     phases.forEach(function (ph) {
       var sec = document.createElement('section');
+      sec.className = 'phase';
       var h = document.createElement('h2'); h.textContent = ph.title;
-      var n = document.createElement('p'); n.className = 'phase-note'; n.textContent = ph.note;
+      var n = document.createElement('p'); n.className = 'hint'; n.textContent = ph.note;
       var list = document.createElement('div'); list.className = 'days';
       sec.appendChild(h); sec.appendChild(n); sec.appendChild(list);
       host.appendChild(sec);
@@ -293,6 +367,7 @@ textarea::placeholder { color: var(--muted); opacity: .8; }
         (function (i) {
           var card = document.createElement('article');
           card.className = 'day';
+          card.id = 'day-' + (i + 1);
 
           var num = document.createElement('div');
           num.className = 'num';
@@ -310,12 +385,13 @@ textarea::placeholder { color: var(--muted); opacity: .8; }
 
           var ul = document.createElement('ul');
           ul.className = 'tasks';
+          dayBoxes[i] = [];
           tasksFor(i).forEach(function (t, j) {
             var li = document.createElement('li');
             var it = makeItem(t, state.days[i].t[j], function (v) {
               state.days[i].t[j] = v; save(); refresh();
             }, 'd' + i + '-' + j);
-            if (j === 2) thirdBoxes[i] = it.input;
+            dayBoxes[i][j] = it.input;
             li.appendChild(it.label);
             ul.appendChild(li);
           });
@@ -336,7 +412,7 @@ textarea::placeholder { color: var(--muted); opacity: .8; }
             var has = ta.value.trim().length > 0;
             if (!had && has && !state.days[i].t[2]) {
               state.days[i].t[2] = true;
-              thirdBoxes[i].checked = true;
+              dayBoxes[i][2].checked = true;
               refresh();
             }
             save();
@@ -363,6 +439,8 @@ textarea::placeholder { color: var(--muted); opacity: .8; }
       dayEls[i].classList.toggle('done', full);
       stampEls[i].hidden = !full;
       dateEls[i].textContent = fmtDate(i);
+      sunEls[i].classList.toggle('on', full);
+      sunEls[i].setAttribute('aria-pressed', full ? 'true' : 'false');
     }
     document.getElementById('doneDays').textContent = doneDays;
     document.getElementById('doneItems').textContent = doneItems;
@@ -371,21 +449,9 @@ textarea::placeholder { color: var(--muted); opacity: .8; }
     document.getElementById('bar').setAttribute('aria-valuenow', pct);
   }
 
-  function drawSeed() {
-    var cx = 36, cy = 30, n = 22, out = '';
-    for (var i = 0; i < n; i++) {
-      var a = (i / n) * Math.PI * 2;
-      var x2 = (cx + Math.cos(a) * 24).toFixed(1), y2 = (cy + Math.sin(a) * 24).toFixed(1);
-      out += '<line x1="' + cx + '" y1="' + cy + '" x2="' + x2 + '" y2="' + y2 + '" stroke="var(--muted)" stroke-width="1.2" stroke-linecap="round"/>';
-      out += '<circle cx="' + x2 + '" cy="' + y2 + '" r="2.6" fill="var(--accent)"/>';
-    }
-    out += '<circle cx="' + cx + '" cy="' + cy + '" r="4" fill="var(--accent)"/>';
-    out += '<path d="M36 36 C 34 48, 38 58, 36 70" fill="none" stroke="var(--green)" stroke-width="2.4" stroke-linecap="round"/>';
-    document.getElementById('seed').innerHTML = out;
-  }
-
   function exportText() {
     var lines = ['Вино из одуванчиков. Мои записи', ''];
+    if (state.pages) { lines.push('Всего страниц ' + state.pages); lines.push(''); }
     for (var i = 0; i < 15; i++) {
       var note = (state.days[i].note || '').trim();
       if (note) {
@@ -408,13 +474,17 @@ textarea::placeholder { color: var(--muted); opacity: .8; }
     toastTimer = setTimeout(function () { toastEl.textContent = ''; }, 3500);
   }
 
+  buildSuns();
   buildPrep();
   buildDays();
-  drawSeed();
 
   var general = document.getElementById('general');
   general.value = state.general;
   general.addEventListener('input', function () { state.general = general.value; save(); });
+
+  var pagesEl = document.getElementById('pages');
+  pagesEl.value = state.pages;
+  pagesEl.addEventListener('input', function () { state.pages = pagesEl.value; save(); });
 
   var startEl = document.getElementById('start');
   startEl.value = state.start;
@@ -460,6 +530,7 @@ textarea::placeholder { color: var(--muted); opacity: .8; }
     document.querySelectorAll('.item input').forEach(function (el) { el.checked = false; });
     noteEls.forEach(function (t) { t.value = ''; });
     general.value = '';
+    pagesEl.value = '';
     disarm();
     refresh();
   });
@@ -467,7 +538,7 @@ textarea::placeholder { color: var(--muted); opacity: .8; }
   refresh();
 
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
-  if ('serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]')) {
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('sw.js').catch(function () {});
     });

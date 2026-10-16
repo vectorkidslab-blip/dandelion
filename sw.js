@@ -1,6 +1,6 @@
 // Caches the app shell on first visit so the page opens without internet.
 // Bump CACHE when index.html changes, so phones pick up the new version.
-var CACHE = 'dandelion-wine-v1';
+var CACHE = 'dandelion-wine-v3';
 var FILES = [
   './',
   './index.html',
@@ -8,7 +8,8 @@ var FILES = [
   './icon-192.png',
   './icon-512.png',
   './icon-maskable-512.png',
-  './apple-touch-icon.png'
+  './apple-touch-icon.png',
+  './bg.jpg'
 ];
 
 self.addEventListener('install', function (e) {
